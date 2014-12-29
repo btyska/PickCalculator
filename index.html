@@ -1,0 +1,322 @@
+<!--
+Horseracing Pick-# Calculator
+Created by Brian Tyska
+Last edited: 12/28/14
+
+Possible enhancements:
+- button: increase horses w/ hideable rows
+- option: start on race > 1
+- allow races(columns) to be hidden-->
+
+<!doctype html>
+
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="stylesheet.css">
+    <title>Horseracing Pick-# Calculator</title>
+</head>
+<body>
+    <script type="text/javascript">
+        var horses = 10;
+        function toCurrency(amt) {
+            return "$" + (amt / 100).toFixed(2);
+        }
+        function toggle(button) {
+            if (button.className.match("inactive")) {
+                button.className="active";
+            } else {
+                button.className="inactive";
+            }
+            recalculate();
+        }
+        function recalculate() {
+            var chosen = [0,0,0,0,0,0,0,0,0];
+            var dSelect = document.getElementById("denomination");
+            var denom = dSelect.options[dSelect.selectedIndex].value;
+            var total = denom;
+            for(race = 0; race < 9; race++){
+                for(horse = 0; horse < horses; horse++){
+                    if (!document.getElementById(race * 10 + horse + 1).className.match("inactive")) {
+                        chosen[race] += 1;
+                    }
+                }
+                document.getElementById(race+200).innerHTML = chosen[race];
+                total *= Math.max(chosen[race], 1);
+            }
+            document.getElementById("total").innerHTML = toCurrency(total);
+            for(race = 0; race < 9; race++) {
+                var highTotal = total * (chosen[race] + 1) / Math.max(chosen[race], 1);
+                var lowTotal = total * Math.max(chosen[race] - 1, 1) / Math.max(chosen[race], 1);
+                if (chosen[race]==horses) {
+                    document.getElementById(race + 210).innerHTML = "MAX";
+                    document.getElementById(race + 220).innerHTML = "MAX";
+                } else {
+                    document.getElementById(race + 210).innerHTML = toCurrency(highTotal);
+                    document.getElementById(race + 220).innerHTML = "+" + toCurrency(highTotal - total);
+                }
+                if (chosen[race]<2) {
+                    document.getElementById(race + 230).innerHTML = "N/A";
+                    document.getElementById(race + 240).innerHTML = "N/A";
+                } else {
+                    document.getElementById(race + 230).innerHTML = toCurrency(lowTotal);
+                    document.getElementById(race + 240).innerHTML = "-" + toCurrency(total - lowTotal);
+                }
+            }
+        }
+        function allHorses(race) {
+            for(horse = 0; horse < horses; horse++) {
+                document.getElementById(race * 10 + horse + 1).className = "active";
+            }
+            recalculate();
+        }
+        function reset() {
+            for(race = 0; race < 9; race++){
+                for(horse = 0; horse < horses; horse++){
+                    document.getElementById(race * 10 + horse + 1).className="inactive";
+                }
+            }
+            recalculate();
+        }
+    </script>
+    <div>
+        <p id="headline">Horseracing Pick-# Calculator</p>
+        <p id="instructions">How to use: Specify the betting denomination, then click at least one horse in each leg of the bet you wish to make. Changes in value for seleting one more or less horse in each race will be shown.</p>
+        <br />
+        <p>
+            Bet denomination
+            <select id="denomination" onchange="recalculate();">
+                <option value="10">$0.10</option>
+                <option value="20">$0.20</option>
+                <option value="50">$0.50</option>
+                <option value="100">$1.00</option>
+                <option value ="200" selected>$2.00</option>
+            </select>
+        </p>
+        <div>
+            <table>
+                <thead>
+                    <td></td>
+                    <td><p> Race 1 </p></td>
+                    <td><p> Race 2 </p></td>
+                    <td><p> Race 3 </p></td>
+                    <td><p> Race 4 </p></td>
+                    <td><p> Race 5 </p></td>
+                    <td><p> Race 6 </p></td>
+                    <td><p> Race 7 </p></td>
+                    <td><p> Race 8 </p></td>
+                    <td><p> Race 9 </p></td>
+                </thead>
+                <!-- Toggle buttons represent chosen horses
+                     IDs increment +1 per horse, +10 per race
+                     IDs up to 199 reserved to expand horses(rows)-->
+                <tbody>
+                    <tr>
+                        <td><input type="button" id="reset" value="reset bet" onclick="reset();"></td>
+                        <td><input type="button" value="all" class="inactive" onclick="allHorses(0);"></td>
+                        <td><input type="button" value="all" class="inactive" onclick="allHorses(1);"></td>
+                        <td><input type="button" value="all" class="inactive" onclick="allHorses(2);"></td>
+                        <td><input type="button" value="all" class="inactive" onclick="allHorses(3);"></td>
+                        <td><input type="button" value="all" class="inactive" onclick="allHorses(4);"></td>
+                        <td><input type="button" value="all" class="inactive" onclick="allHorses(5);"></td>
+                        <td><input type="button" value="all" class="inactive" onclick="allHorses(6);"></td>
+                        <td><input type="button" value="all" class="inactive" onclick="allHorses(7);"></td>
+                        <td><input type="button" value="all" class="inactive" onclick="allHorses(8);"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="button" id=1 value="1" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=11 value="1" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=21 value="1" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=31 value="1" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=41 value="1" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=51 value="1" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=61 value="1" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=71 value="1" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=81 value="1" class="inactive" onclick="toggle(this);"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="button" id=2 value="2" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=12 value="2" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=22 value="2" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=32 value="2" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=42 value="2" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=52 value="2" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=62 value="2" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=72 value="2" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=82 value="2" class="inactive" onclick="toggle(this);"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="button" id=3 value="3" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=13 value="3" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=23 value="3" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=33 value="3" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=43 value="3" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=53 value="3" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=63 value="3" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=73 value="3" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=83 value="3" class="inactive" onclick="toggle(this);"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="button" id=4 value="4" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=14 value="4" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=24 value="4" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=34 value="4" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=44 value="4" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=54 value="4" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=64 value="4" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=74 value="4" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=84 value="4" class="inactive" onclick="toggle(this);"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="button" id=5 value="5" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=15 value="5" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=25 value="5" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=35 value="5" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=45 value="5" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=55 value="5" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=65 value="5" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=75 value="5" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=85 value="5" class="inactive" onclick="toggle(this);"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="button" id=6 value="6" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=16 value="6" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=26 value="6" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=36 value="6" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=46 value="6" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=56 value="6" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=66 value="6" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=76 value="6" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=86 value="6" class="inactive" onclick="toggle(this);"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="button" id=7 value="7" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=17 value="7" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=27 value="7" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=37 value="7" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=47 value="7" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=57 value="7" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=67 value="7" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=77 value="7" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=87 value="7" class="inactive" onclick="toggle(this);"></td>
+                    </tr>
+                    <tr>
+                        <td><p>Current</p></td>
+                        <td><input type="button" id=8 value="8" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=18 value="8" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=28 value="8" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=38 value="8" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=48 value="8" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=58 value="8" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=68 value="8" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=78 value="8" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=88 value="8" class="inactive" onclick="toggle(this);"></td>
+                    </tr>
+                    <tr>
+                        <td><p>total</p></td>
+                        <td><input type="button" id=9 value="9" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=19 value="9" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=29 value="9" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=39 value="9" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=49 value="9" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=59 value="9" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=69 value="9" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=79 value="9" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=89 value="9" class="inactive" onclick="toggle(this);"></td>
+                    </tr>
+                    <tr>
+                        <td id="totbox"><p id="total">$0</p></td>
+                        <td><input type="button" id=10 value="10" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=20 value="10" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=30 value="10" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=40 value="10" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=50 value="10" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=60 value="10" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=70 value="10" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=80 value="10" class="inactive" onclick="toggle(this);"></td>
+                        <td><input type="button" id=90 value="10" class="inactive" onclick="toggle(this);"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><p> Race 1 </p></td>
+                        <td><p> Race 2 </p></td>
+                        <td><p> Race 3 </p></td>
+                        <td><p> Race 4 </p></td>
+                        <td><p> Race 5 </p></td>
+                        <td><p> Race 6 </p></td>
+                        <td><p> Race 7 </p></td>
+                        <td><p> Race 8 </p></td>
+                        <td><p> Race 9 </p></td>
+                    </tr>
+                    <tr class="results">
+                        <td><p>Selected</p></td>
+                        <td><p id=200>0</p></td>
+                        <td><p id=201>0</p></td>
+                        <td><p id=202>0</p></td>
+                        <td><p id=203>0</p></td>
+                        <td><p id=204>0</p></td>
+                        <td><p id=205>0</p></td>
+                        <td><p id=206>0</p></td>
+                        <td><p id=207>0</p></td>
+                        <td><p id=208>0</p></td>
+                    </tr>
+                    <tr class="results">
+                        <td><p>Total after +1 horse</p></td>
+                        <td><p id=210>$2.00</p></td>
+                        <td><p id=211>$2.00</p></td>
+                        <td><p id=212>$2.00</p></td>
+                        <td><p id=213>$2.00</p></td>
+                        <td><p id=214>$2.00</p></td>
+                        <td><p id=215>$2.00</p></td>
+                        <td><p id=216>$2.00</p></td>
+                        <td><p id=217>$2.00</p></td>
+                        <td><p id=218>$2.00</p></td>
+                    </tr>
+                    <tr class="results">
+                        <td><p>Difference</p></td>
+                        <td><p id=220 class="positive">+$2.00</p></td>
+                        <td><p id=221 class="positive">+$2.00</p></td>
+                        <td><p id=222 class="positive">+$2.00</p></td>
+                        <td><p id=223 class="positive">+$2.00</p></td>
+                        <td><p id=224 class="positive">+$2.00</p></td>
+                        <td><p id=225 class="positive">+$2.00</p></td>
+                        <td><p id=226 class="positive">+$2.00</p></td>
+                        <td><p id=227 class="positive">+$2.00</p></td>
+                        <td><p id=228 class="positive">+$2.00</p></td>
+                    </tr>
+                    <tr class="results">
+                        <td><p>Total after -1 horse</p></td>
+                        <td><p id=230>N/A</p></td>
+                        <td><p id=231>N/A</p></td>
+                        <td><p id=232>N/A</p></td>
+                        <td><p id=233>N/A</p></td>
+                        <td><p id=234>N/A</p></td>
+                        <td><p id=235>N/A</p></td>
+                        <td><p id=236>N/A</p></td>
+                        <td><p id=237>N/A</p></td>
+                        <td><p id=238>N/A</p></td>
+                    </tr>
+                    <tr class="results">
+                        <td><p>Difference</p></td>
+                        <td><p id=240 class="negative">N/A</p></td>
+                        <td><p id=241 class="negative">N/A</p></td>
+                        <td><p id=242 class="negative">N/A</p></td>
+                        <td><p id=243 class="negative">N/A</p></td>
+                        <td><p id=244 class="negative">N/A</p></td>
+                        <td><p id=245 class="negative">N/A</p></td>
+                        <td><p id=246 class="negative">N/A</p></td>
+                        <td><p id=247 class="negative">N/A</p></td>
+                        <td><p id=248 class="negative">N/A</p></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
